@@ -26,8 +26,8 @@ public:
     virtual bool next() override
     {
         m_StartLine = m_EndLine;
+        SkipManyDelimiter(m_StartLine);
         m_EndLine = GetNextLine();
-        m_StartLine.next();
         return is_valid();
     }
 
@@ -52,6 +52,12 @@ protected:
             iterator.prev();
         return iterator;
     }
+
+    void SkipManyDelimiter(baseex::core::IStream::Iterator &iterator)
+    {
+        while (iterator.next() && iterator.current() == m_Delim);
+    }
+
 
 private:
     baseex::core::IStream::Ptr m_Stream;
