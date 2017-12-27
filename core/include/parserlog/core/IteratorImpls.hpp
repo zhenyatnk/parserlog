@@ -11,6 +11,7 @@ namespace parserlog {
 namespace core {
 
 PARSERLOG_CORE_EXPORT TIterator<char>::Ptr CreateIteratorSymbols(baseex::core::IStream::Ptr);
+PARSERLOG_CORE_EXPORT TIterator<char>::Ptr CreateIteratorSymbols(baseex::core::ILinearStream::Ptr);
 //TIterator<std::string>::Ptr CreateIteratorLines(baseex::core::IStream::Ptr);
 //TIterator<std::string>::Ptr CreateIteratorElements(baseex::core::IStream::Ptr);
 
