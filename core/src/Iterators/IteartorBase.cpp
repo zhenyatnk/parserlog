@@ -5,10 +5,10 @@ namespace parserlog {
 namespace core {
 
 class CIteratorBase
-    :public baseex::core::TIterator<baseex::core::ILinearStream::Ptr>
+    :public baseex::core::TIterator<baseex::core::experimental::IStreamBuffer::Ptr>
 {
 public:
-    explicit CIteratorBase(baseex::core::IStream::Ptr aStream, const char aDelimeter)
+    explicit CIteratorBase(baseex::core::experimental::IStream::Ptr aStream, const char aDelimeter)
         :m_Stream(aStream), m_Delim(aDelimeter), m_StartLine(m_Stream->CreateIterator()), m_EndLine(m_Stream->CreateIterator())
     {}
 
@@ -31,18 +31,18 @@ public:
         return is_valid();
     }
 
-    virtual baseex::core::ILinearStream::Ptr current() override
+    virtual baseex::core::experimental::IStreamBuffer::Ptr current() override
     {
         CHECK_THROW_BOOL(is_valid(), baseex::core::exceptions::iterator_out_of_range_error, "");
 
         if(m_EndLine.is_valid())
-            return baseex::core::CreateLinearBuffer(m_Stream->Read(m_StartLine, m_EndLine));
+            return m_Stream->Read(m_StartLine, m_EndLine);
         else
-            return baseex::core::CreateLinearBuffer(m_Stream->Read(m_StartLine));
+            return m_Stream->Read(m_StartLine);
     }
 
 protected:
-    baseex::core::IStream::Iterator GetNextLine()
+    baseex::core::experimental::IStream::Iterator GetNextLine()
     {
         auto iterator = m_StartLine;
         while (iterator.next())
@@ -53,22 +53,32 @@ protected:
         return iterator;
     }
 
-    void SkipManyDelimiter(baseex::core::IStream::Iterator &iterator)
+    void SkipManyDelimiter(baseex::core::experimental::IStream::Iterator &iterator)
     {
         while (iterator.next() && iterator.current() == m_Delim);
     }
 
 
 private:
-    baseex::core::IStream::Ptr m_Stream;
+    baseex::core::experimental::IStream::Ptr m_Stream;
     const char m_Delim;
-    baseex::core::IStream::Iterator m_StartLine;
-    baseex::core::IStream::Iterator m_EndLine;
+    baseex::core::experimental::IStream::Iterator m_StartLine;
+    baseex::core::experimental::IStream::Iterator m_EndLine;
 };
 
-baseex::core::TIterator<baseex::core::ILinearStream::Ptr>::Ptr CreateBaseIterator(baseex::core::IStream::Ptr aStream, const char aDelimeter)
+baseex::core::TIterator<baseex::core::experimental::IStreamBuffer::Ptr>::Ptr CreateBaseIterator(baseex::core::experimental::IStream::Ptr aStream, const char aDelimeter)
 {
-    return baseex::core::TIterator<baseex::core::ILinearStream::Ptr>::Ptr(new CIteratorBase(aStream, aDelimeter));
+    return baseex::core::TIterator<baseex::core::experimental::IStreamBuffer::Ptr>::Ptr(new CIteratorBase(aStream, aDelimeter));
+}
+
+baseex::core::TIterator<baseex::core::experimental::IStreamBuffer::Ptr>::Ptr CreateIteratorLines(baseex::core::experimental::IStream::Ptr aStream)
+{
+    return baseex::core::TIterator<baseex::core::experimental::IStreamBuffer::Ptr>::Ptr(new CIteratorBase(aStream, '\n'));
+}
+
+baseex::core::TIterator<baseex::core::experimental::IStreamBuffer::Ptr>::Ptr CreateIteratorElements(baseex::core::experimental::IStream::Ptr aStream)
+{
+    return baseex::core::TIterator<baseex::core::experimental::IStreamBuffer::Ptr>::Ptr(new CIteratorBase(aStream, '\t'));
 }
 
 }
