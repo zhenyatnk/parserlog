@@ -48,7 +48,6 @@ int main(int ac, char** av)
             file.open(av[1], std::fstream::in);
             std::string l;
             uint64_t lCount = 0;
-            uint64_t lCount_tab = 0;
             std::map<std::string, size_t> lcount;
             while (std::getline(file, l))
             {
@@ -57,7 +56,6 @@ int main(int ac, char** av)
                 if (std::getline(linestream, l2, '\t'))
                     if (std::getline(linestream, l2, '\t'))
                         if(l2.substr(0,2) == "0x")
-                            
                             ++lcount[l2];
                 ++lCount;
             }
@@ -66,10 +64,38 @@ int main(int ac, char** av)
                 std::cout << element.first << "\t" << element.second << std::endl;
             }
 
-            std::cout << lCount_tab << "\t" << lCount << std::endl;
+            std::cout << lCount << std::endl;
             file.close();
         }
-  
+
+        {
+            CTimeLoger time_log("Read iterators getline");
+            auto file = std::make_shared<std::fstream>();
+            file->open(av[1], std::fstream::in);
+            uint64_t lCount = 0;
+            std::map<std::string, size_t> lcount;
+            auto iterator = parserlog::core::CreateIteratorLines(file);
+            while (iterator->next())
+            {
+                auto iterator_tabs = parserlog::core::CreateIteratorTabs(iterator->current());
+                if (iterator_tabs->next() && iterator_tabs->next())
+                {
+                    auto str = iterator_tabs->current();
+                    if(str.substr(0, 2) == "0x")
+                        ++lcount[str];
+                }
+                ++lCount;
+            }
+            for (auto element : lcount)
+            {
+                std::cout << element.first << "\t" << element.second << std::endl;
+            }
+
+            std::cout << lCount << std::endl;
+            file->close();
+        }
+
+
     }
     
     return 0;
