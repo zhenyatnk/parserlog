@@ -1,14 +1,18 @@
 #include <parserlog/core/export.hpp>
+#include <parserlog/core/IteratorImpls.hpp>
 #include <baseex/core/CFileName.hpp>
+#include <baseex/core/IStream.hpp>
 #include <baseex/core/Unicode.hpp>
 #include <baseex/core/RAII.hpp>
 
 #include <stdio.h>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <chrono>
 #include <ctime>
+#include <map>
 
 class CTimeLoger
     :public baseex::core::IRAII
@@ -44,24 +48,28 @@ int main(int ac, char** av)
             file.open(av[1], std::fstream::in);
             std::string l;
             uint64_t lCount = 0;
+            uint64_t lCount_tab = 0;
+            std::map<std::string, size_t> lcount;
             while (std::getline(file, l))
+            {
+                std::stringstream linestream(l);
+                std::string l2;
+                if (std::getline(linestream, l2, '\t'))
+                    if (std::getline(linestream, l2, '\t'))
+                        if(l2.substr(0,2) == "0x")
+                            
+                            ++lcount[l2];
                 ++lCount;
-            std::cout << lCount << std::endl;
-            file.close();
-        }
+            }
+            for (auto element : lcount)
+            {
+                std::cout << element.first << "\t" << element.second << std::endl;
+            }
 
-        {
-            CTimeLoger time_log("Read");
-            std::fstream file;
-            file.open(av[1], std::fstream::in);
-            std::string l;
-            uint64_t lCount = 0;
-            while (std::getline(file, l))
-                ++lCount;
-            std::cout << lCount << std::endl;
+            std::cout << lCount_tab << "\t" << lCount << std::endl;
             file.close();
         }
-        
+  
     }
     
     return 0;

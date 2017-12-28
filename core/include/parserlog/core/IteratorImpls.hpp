@@ -7,6 +7,7 @@
 #include <baseex/core/IStream.hpp>
 
 #include <string>
+#include <fstream>
 
 namespace parserlog {
 namespace core {
