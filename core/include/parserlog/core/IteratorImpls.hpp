@@ -12,12 +12,7 @@
 namespace parserlog {
 namespace core {
 
-PARSERLOG_CORE_EXPORT baseex::core::TIterator<baseex::core::experimental::IStreamBuffer::Ptr>::Ptr CreateBaseIterator(baseex::core::experimental::IStream::Ptr, const char aDelimeter);
-PARSERLOG_CORE_EXPORT baseex::core::TIterator<baseex::core::experimental::IStreamBuffer::Ptr>::Ptr CreateIteratorLines(baseex::core::experimental::IStream::Ptr);
-PARSERLOG_CORE_EXPORT baseex::core::TIterator<baseex::core::experimental::IStreamBuffer::Ptr>::Ptr CreateIteratorElements(baseex::core::experimental::IStream::Ptr);
-
 PARSERLOG_CORE_EXPORT baseex::core::TIterator<std::string>::Ptr CreateIteratorLines(std::shared_ptr<std::fstream> aFile);
-PARSERLOG_CORE_EXPORT baseex::core::TIterator<std::string>::Ptr CreateIteratorTabs(const std::string&);
 
 }
 }

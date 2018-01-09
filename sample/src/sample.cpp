@@ -1,5 +1,9 @@
 #include <parserlog/core/export.hpp>
 #include <parserlog/core/IteratorImpls.hpp>
+#include <parserlog/core/Parser.hpp>
+#include <parserlog/model/ThreadInfo.hpp>
+#include <parserlog/model/LineInfo.hpp>
+
 #include <baseex/core/CFileName.hpp>
 #include <baseex/core/IStream.hpp>
 #include <baseex/core/Unicode.hpp>
@@ -12,6 +16,7 @@
 #include <string>
 #include <chrono>
 #include <ctime>
+#include <iomanip>
 #include <map>
 
 class CTimeLoger
@@ -43,52 +48,43 @@ int main(int ac, char** av)
     if (ac > 1)
     {
         {
-            CTimeLoger time_log("Read iostream getline");
-            std::fstream file;
-            file.open(av[1], std::fstream::in);
-            std::string l;
-            uint64_t lCount = 0;
-            std::map<std::string, size_t> lcount;
-            while (std::getline(file, l))
-            {
-                std::stringstream linestream(l);
-                std::string l2;
-                if (std::getline(linestream, l2, '\t'))
-                    if (std::getline(linestream, l2, '\t'))
-                        if(l2.substr(0,2) == "0x")
-                            ++lcount[l2];
-                ++lCount;
-            }
-            for (auto element : lcount)
-            {
-                std::cout << element.first << "\t" << element.second << std::endl;
-            }
-
-            std::cout << lCount << std::endl;
-            file.close();
-        }
-
-        {
             CTimeLoger time_log("Read iterators getline");
             auto file = std::make_shared<std::fstream>();
             file->open(av[1], std::fstream::in);
             uint64_t lCount = 0;
-            std::map<std::string, size_t> lcount;
+            std::map<uint64_t, parserlog::model::ThreadInfo> lThreads;
             auto iterator = parserlog::core::CreateIteratorLines(file);
             while (iterator->next())
             {
-                auto iterator_tabs = parserlog::core::CreateIteratorTabs(iterator->current());
-                if (iterator_tabs->next() && iterator_tabs->next())
+                auto line = iterator->current();
+                if (parserlog::core::isLogFormat(line))
                 {
-                    auto str = iterator_tabs->current();
-                    if(str.substr(0, 2) == "0x")
-                        ++lcount[str];
+                    auto info = parserlog::core::GetLineInfo(line);
+                    auto thread = lThreads.find(info.m_ThreadId);
+                    if (thread == lThreads.end())
+                    {
+                        parserlog::model::ThreadInfo thread;
+                        thread.m_Id = info.m_ThreadId;
+                        thread.m_Count = 1;
+                        thread.m_TimeStart = info.m_TimeStamp;
+                        thread.m_ComponentCount[info.m_Component] = 1;
+
+                        lThreads[info.m_ThreadId] = thread;
+                    }
+                    else
+                    {
+                        ++thread->second.m_Count;
+                        thread->second.m_TimeEnd = info.m_TimeStamp;
+
+                        auto component = thread->second.m_ComponentCount.find(info.m_Component);
+                        if (component == thread->second.m_ComponentCount.end())
+                            thread->second.m_ComponentCount[info.m_Component] = 1;
+                        else
+                            ++component->second;
+
+                    }
+
                 }
-                ++lCount;
-            }
-            for (auto element : lcount)
-            {
-                std::cout << element.first << "\t" << element.second << std::endl;
             }
 
             std::cout << lCount << std::endl;
@@ -97,6 +93,8 @@ int main(int ac, char** av)
 
 
     }
-    
+
+
+
     return 0;
 }
