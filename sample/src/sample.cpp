@@ -35,8 +35,6 @@ int main(int ac, char** av)
                 std::map<uint64_t, parserlog::model::ThreadInfo> lThreads = parserlog::core::GetThreadsInfo(file);
             }
         }
-
-
     }
     return 0;
 }
