@@ -1,4 +1,5 @@
 #include <parserlog/core/Parser.hpp>
+#include <parserlog/core/IteratorImpls.hpp>
 
 #include <sstream>
 #include <iomanip>
@@ -27,6 +28,46 @@ parserlog::model::LineInfo GetLineInfo(const std::string &aString)
     lStringStream >> lLineInfo.m_Type;
     lStringStream >> lLineInfo.m_Component;
     return lLineInfo;
+}
+
+
+std::map<uint64_t, parserlog::model::ThreadInfo> GetThreadsInfo(std::shared_ptr<std::fstream> aFile)
+{
+    std::map<uint64_t, parserlog::model::ThreadInfo> lThreads;
+    auto iterator = parserlog::core::CreateIteratorLines(aFile);
+    while (iterator->next())
+    {
+        auto line = iterator->current();
+        if (parserlog::core::isLogFormat(line))
+        {
+            auto info = parserlog::core::GetLineInfo(line);
+            auto thread = lThreads.find(info.m_ThreadId);
+            if (thread == lThreads.end())
+            {
+                parserlog::model::ThreadInfo thread;
+                thread.m_Id = info.m_ThreadId;
+                thread.m_Count = 1;
+                thread.m_TimeStart = info.m_TimeStamp;
+                thread.m_ComponentCount[info.m_Component] = 1;
+
+                lThreads[info.m_ThreadId] = thread;
+            }
+            else
+            {
+                ++thread->second.m_Count;
+                thread->second.m_TimeEnd = info.m_TimeStamp;
+
+                auto component = thread->second.m_ComponentCount.find(info.m_Component);
+                if (component == thread->second.m_ComponentCount.end())
+                    thread->second.m_ComponentCount[info.m_Component] = 1;
+                else
+                    ++component->second;
+
+            }
+
+        }
+    }
+    return lThreads;
 }
 
 }
