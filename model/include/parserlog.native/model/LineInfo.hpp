@@ -1,6 +1,6 @@
 #pragma once
 
-#include <parserlog/model/export.hpp>
+#include <parserlog.native/model/export.hpp>
 
 #include <string>
 #include <map>
@@ -8,6 +8,7 @@
 #include <time.h>
 
 namespace parserlog {
+namespace native {
 namespace model {
 
 class LineInfo
@@ -25,5 +26,6 @@ public:
     std::string m_Component;
 };
 
+}
 }
 }

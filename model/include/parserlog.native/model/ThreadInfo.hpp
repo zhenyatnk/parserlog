@@ -1,6 +1,6 @@
 #pragma once
 
-#include <parserlog/model/export.hpp>
+#include <parserlog.native/model/export.hpp>
 
 #include <string>
 #include <map>
@@ -8,6 +8,7 @@
 #include <time.h>
 
 namespace parserlog {
+namespace native {
 namespace model {
 
 class ThreadInfo
@@ -27,5 +28,6 @@ public:
     std::map<std::string, int> m_ComponentCount;
 };
 
+}
 }
 }

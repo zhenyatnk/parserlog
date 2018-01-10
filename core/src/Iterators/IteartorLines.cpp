@@ -1,7 +1,8 @@
-#include <parserlog/core/IteratorImpls.hpp>
+#include <parserlog.native/core/IteratorImpls.hpp>
 #include <baseex/core/IIteratorException.hpp>
 
 namespace parserlog {
+namespace native {
 namespace core {
 
 class CIteratorLines
@@ -46,5 +47,6 @@ baseex::core::TIterator<std::string>::Ptr CreateIteratorLines(std::shared_ptr<st
     return baseex::core::TIterator<std::string>::Ptr(new CIteratorLines(aFile));
 }
 
+}
 }
 }

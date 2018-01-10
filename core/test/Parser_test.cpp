@@ -1,9 +1,9 @@
-#include <parserlog/core/Parser.hpp>
+#include <parserlog.native/core/Parser.hpp>
 
 #include <gtest/gtest.h>
 
 //--------------------------------------------------
-using namespace parserlog::core;
+using namespace parserlog::native::core;
 
 class Parser_test
     :public ::testing::Test

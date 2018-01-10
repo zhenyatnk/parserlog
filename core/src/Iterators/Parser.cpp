@@ -1,10 +1,11 @@
-#include <parserlog/core/Parser.hpp>
-#include <parserlog/core/IteratorImpls.hpp>
+#include <parserlog.native/core/Parser.hpp>
+#include <parserlog.native/core/IteratorImpls.hpp>
 
 #include <sstream>
 #include <iomanip>
 
 namespace parserlog {
+namespace native {
 namespace core {
 
 bool isLogFormat(const std::string &aString)
@@ -14,16 +15,16 @@ bool isLogFormat(const std::string &aString)
     return (!!(std::getline(lStringStream, threadID, '\t')) && !!(std::getline(lStringStream, threadID, '\t')) && threadID.substr(0, 2) == "0x");
 }
 
-parserlog::model::LineInfo GetLineInfo(const std::string &aString)
+parserlog::native::model::LineInfo GetLineInfo(const std::string &aString)
 {
-    parserlog::model::LineInfo lLineInfo;
+    parserlog::native::model::LineInfo lLineInfo;
     std::stringstream lStringStream(aString);
     auto miliseconds = 0;
     std::string threadID = "";
     lStringStream >> std::get_time(&lLineInfo.m_TimeStamp, "%H:%M:%S.");
     lStringStream >> miliseconds;
     lStringStream >> threadID;
-    if(!threadID.empty() && threadID.substr(0, 2) == "0x")
+    if (!threadID.empty() && threadID.substr(0, 2) == "0x")
         lLineInfo.m_ThreadId = std::stoul(threadID, nullptr, 16);
     lStringStream >> lLineInfo.m_Type;
     lStringStream >> lLineInfo.m_Component;
@@ -31,20 +32,20 @@ parserlog::model::LineInfo GetLineInfo(const std::string &aString)
 }
 
 
-std::map<uint64_t, parserlog::model::ThreadInfo> GetThreadsInfo(std::shared_ptr<std::fstream> aFile)
+std::map<uint64_t, parserlog::native::model::ThreadInfo> GetThreadsInfo(std::shared_ptr<std::fstream> aFile)
 {
-    std::map<uint64_t, parserlog::model::ThreadInfo> lThreads;
-    auto iterator = parserlog::core::CreateIteratorLines(aFile);
+    std::map<uint64_t, parserlog::native::model::ThreadInfo> lThreads;
+    auto iterator = CreateIteratorLines(aFile);
     while (iterator->next())
     {
         auto line = iterator->current();
-        if (parserlog::core::isLogFormat(line))
+        if (isLogFormat(line))
         {
-            auto info = parserlog::core::GetLineInfo(line);
+            auto info = GetLineInfo(line);
             auto thread = lThreads.find(info.m_ThreadId);
             if (thread == lThreads.end())
             {
-                parserlog::model::ThreadInfo thread;
+                parserlog::native::model::ThreadInfo thread;
                 thread.m_Id = info.m_ThreadId;
                 thread.m_Count = 1;
                 thread.m_TimeStart = info.m_TimeStamp;
@@ -70,5 +71,6 @@ std::map<uint64_t, parserlog::model::ThreadInfo> GetThreadsInfo(std::shared_ptr<
     return lThreads;
 }
 
+}
 }
 }

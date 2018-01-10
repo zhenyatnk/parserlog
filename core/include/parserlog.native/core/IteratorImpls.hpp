@@ -1,6 +1,6 @@
 #pragma once
 
-#include <parserlog/core/export.hpp>
+#include <parserlog.native/core/export.hpp>
 
 #include <baseex/core/IIterator.hpp>
 #include <baseex/core/IIteratorException.hpp>
@@ -10,9 +10,11 @@
 #include <fstream>
 
 namespace parserlog {
+namespace native {
 namespace core {
 
-PARSERLOG_CORE_EXPORT baseex::core::TIterator<std::string>::Ptr CreateIteratorLines(std::shared_ptr<std::fstream> aFile);
+PARSERLOG_NATIVE_CORE_EXPORT baseex::core::TIterator<std::string>::Ptr CreateIteratorLines(std::shared_ptr<std::fstream> aFile);
 
+}
 }
 }

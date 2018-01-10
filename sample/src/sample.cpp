@@ -1,8 +1,8 @@
-#include <parserlog/core/export.hpp>
-#include <parserlog/core/IteratorImpls.hpp>
-#include <parserlog/core/Parser.hpp>
-#include <parserlog/model/ThreadInfo.hpp>
-#include <parserlog/model/LineInfo.hpp>
+#include <parserlog.native/core/export.hpp>
+#include <parserlog.native/core/IteratorImpls.hpp>
+#include <parserlog.native/core/Parser.hpp>
+#include <parserlog.native/model/ThreadInfo.hpp>
+#include <parserlog.native/model/LineInfo.hpp>
 
 #include <baseex/core/CFileName.hpp>
 #include <baseex/core/IStream.hpp>
@@ -32,7 +32,7 @@ int main(int ac, char** av)
             if (file->is_open())
             {
                 baseex::core::dtor_raii l([file]() { file->close(); });
-                std::map<uint64_t, parserlog::model::ThreadInfo> lThreads = parserlog::core::GetThreadsInfo(file);
+                std::map<uint64_t, parserlog::native::model::ThreadInfo> lThreads = parserlog::native::core::GetThreadsInfo(file);
             }
         }
     }
